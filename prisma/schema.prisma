@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  auth0_id  String   @unique
+  email     String   @unique
+  name      String?
+  plan      Plan     @default(FREE)
+  created_at DateTime @default(now())
+  
+  profiles    Profile[]
+  applications Application[]
+  
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  user_id     String
+  resume_url  String?
+  skills      String[]
+  experience  Json?
+  location    String?
+  preferences Json?
+  
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@map("profiles")
+}
+
+model Job {
+  id        String   @id @default(uuid())
+  company   String
+  title     String
+  location  String?
+  apply_url String
+  source    String   // linkedin, careers, greenhouse, etc
+  hash      String   @unique // unique fingerprint
+  last_seen DateTime @default(now())
+  created_at DateTime @default(now())
+  
+  applications Application[]
+  
+  @@index([hash])
+  @@index([source])
+  @@index([last_seen])
+  @@map("jobs")
+}
+
+model Application {
+  id         String            @id @default(uuid())
+  user_id    String
+  job_id     String
+  status     ApplicationStatus @default(QUEUED)
+  answers    Json?
+  applied_at DateTime?
+  created_at DateTime          @default(now())
+  
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id])
+  @@index([job_id])
+  @@index([status])
+  @@map("applications")
+}
+
+model Bot {
+  id         String   @id @default(uuid())
+  name       String
+  last_run   DateTime?
+  jobs_added Int      @default(0)
+  status     BotStatus @default(IDLE)
+  created_at DateTime @default(now())
+  
+  @@map("bots")
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum ApplicationStatus {
+  QUEUED
+  APPLIED
+  FAILED
+  SUCCESS
+}
+
+enum BotStatus {
+  IDLE
+  RUNNING
+  ERROR
+}
