@@ -1,6 +1,7 @@
 import { getSession } from '@auth0/nextjs-auth0'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Header from '@/components/Header'
 import JobsList from '@/components/JobsList'
 
 export default async function JobsPage() {
@@ -12,24 +13,7 @@ export default async function JobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/dashboard" className="text-2xl font-bold text-indigo-600">
-            Applyr
-          </Link>
-          <div className="flex gap-4 items-center">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-800">
-              Dashboard
-            </Link>
-            <Link 
-              href="/api/auth/logout" 
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Logout
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header user={{ name: session.user?.name, email: session.user?.email }} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

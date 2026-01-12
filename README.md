@@ -58,17 +58,19 @@ Company Career Portals
    The `.env.local` file has been created with placeholder values. Update it with your actual credentials:
 
    - **Auth0 credentials** (required):
+
      - Go to [Auth0 Dashboard](https://manage.auth0.com/)
      - Create a new Application (Regular Web Application)
      - Configure allowed callback URLs: `http://localhost:3000/api/auth/callback`
      - Configure allowed logout URLs: `http://localhost:3000`
      - Enable Google and Apple social connections
      - Copy `Domain`, `Client ID`, and `Client Secret` to `.env.local`
-   
+
    - **Neon Postgres** (required):
+
      - Create a database at [Neon Console](https://console.neon.tech/)
      - Copy the connection string to `DATABASE_URL` in `.env.local`
-   
+
    - **Upstash Redis** (optional for development):
      - Create a Redis instance at [Upstash Console](https://console.upstash.com/)
      - Copy the REST URL and token to `.env.local`
@@ -122,10 +124,16 @@ Company Career Portals
 
 1. Create an Auth0 account
 2. Create a new application (Regular Web Application)
-3. Configure allowed callback URLs: `http://localhost:3000/api/auth/callback`
-4. Configure allowed logout URLs: `http://localhost:3000`
-5. Enable Google and Apple social connections
-6. Copy credentials to `.env`
+3. **Configure these URLs:**
+   - **Allowed Callback URLs:** `http://localhost:3000/api/auth/callback`
+   - **Allowed Logout URLs:** `http://localhost:3000`
+   - **Allowed Web Origins:** `http://localhost:3000`
+   - **Application Login URI:** Leave this **EMPTY** (not needed for standard OAuth flow)
+4. Enable Google and Apple social connections
+5. Copy credentials to `.env.local`:
+   - Domain → `AUTH0_ISSUER_BASE_URL`
+   - Client ID → `AUTH0_CLIENT_ID`
+   - Client Secret → `AUTH0_CLIENT_SECRET`
 
 ## 🤖 Bot & Automation
 
