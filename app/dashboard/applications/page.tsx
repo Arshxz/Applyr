@@ -48,12 +48,11 @@ export default async function ApplicationsPage() {
             {count === 1 ? "" : "s"}.
           </p>
         </div>
-
         {count === 0 ? (
           <div className="bg-white p-6 rounded-lg shadow text-center text-gray-600">
             <p className="text-xl">0 jobs applied</p>
             <p className="mt-2">
-              You haven't applied to any jobs yet. Browse jobs to get started.
+              You haven&apos;t applied to any jobs yet. Browse jobs to get started.
             </p>
             <div className="mt-4">
               <Link

@@ -39,9 +39,8 @@ export default async function DashboardPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's your overview.</p>
+          <p className="text-gray-600">Welcome back! Here&apos;s your overview.</p>
         </div>
-
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-2xl font-bold text-indigo-600">{jobsCount.toLocaleString()}</div>

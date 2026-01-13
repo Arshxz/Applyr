@@ -20,10 +20,12 @@ export default function Header({ user }: { user?: UserProp }) {
         <div className="flex gap-4 items-center">
           {currentUser ? (
             <>
-              <Link href={currentUser ? "/dashboard" : "/"} className="text-gray-600 hover:text-gray-800">
-                Dashboard
-              </Link>
+            <Link
+              href="/dashboard"
+              className="px-8 py-4 bg-indigo-200 text-white rounded-lg hover:bg-indigo-300 transition-colors text-lg font-semibold"
+            >
               <span className="text-gray-700">{currentUser.name || currentUser.email}</span>
+            </Link>
               <Link href="/api/auth/logout" className="px-4 py-2 text-gray-600 hover:text-gray-800">
                 Logout
               </Link>
