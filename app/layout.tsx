@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { UserProvider } from '@auth0/nextjs-auth0/client'
+import { ToastProvider } from "@/components/Toast";
+import Script from "next/script";
+
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,6 +23,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <UserProvider>
           {children}
+          <Script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`}
+          strategy="beforeInteractive"
+        />
+          <ToastProvider />
         </UserProvider>
       </body>
     </html>

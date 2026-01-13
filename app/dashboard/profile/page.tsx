@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from '@/components/Header';
+import { showToast } from "@/components/Toast";
 
 interface Profile {
   id: string;
@@ -42,7 +44,9 @@ const QUALIFICATIONS = [
   "Other",
 ];
 
+
 export default function ProfilePage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -56,6 +60,7 @@ export default function ProfilePage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeBase64, setResumeBase64] = useState<string | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
+  const locationRef = useRef<HTMLInputElement>(null);
 
   // Modal states
   const [showExperienceModal, setShowExperienceModal] = useState(false);
@@ -277,6 +282,26 @@ export default function ProfilePage() {
     setEducations(educations.filter((edu) => edu.id !== id));
   };
 
+useEffect(() => {
+  if (!locationRef.current || !window.google) return;
+
+  const autocomplete = new google.maps.places.Autocomplete(
+    locationRef.current,
+    {
+      types: ["(cities)"],
+    }
+  );
+
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
+
+    setExpForm((prev) => ({
+      ...prev,
+      location: place.formatted_address || place.name || "",
+    }));
+  });
+}, []);
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -302,22 +327,15 @@ export default function ProfilePage() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert(error.error || "Failed to save profile");
+        showToast.error(error.error || "Failed to save profile");
         return;
       }
 
-      const data = await res.json();
-      setProfile(data);
-      // Update resume state from server response
-      if (data.resume_data) {
-        setResumeBase64(data.resume_data);
-        setResumeFileName(data.resume_name || "resume.pdf");
-      }
-      setResumeFile(null);
-      alert("Profile saved successfully!");
+      showToast.success("Profile saved successfully");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Failed to save profile");
+      showToast.error("Failed to save profile");
     } finally {
       setSaving(false);
     }
@@ -358,7 +376,7 @@ export default function ProfilePage() {
               type="file"
               accept=".pdf"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
             />
             {resumeFileName && (
               <p className="mt-2 text-sm text-gray-600">
@@ -395,7 +413,7 @@ export default function ProfilePage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g., San Francisco, CA or Remote"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
 
@@ -416,7 +434,7 @@ export default function ProfilePage() {
                   }
                 }}
                 placeholder="Add a skill (e.g., JavaScript, React, Python)"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="flex-1 text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
               <button
                 onClick={handleAddSkill}
@@ -442,7 +460,7 @@ export default function ProfilePage() {
               ))}
             </div>
             {skills.length === 0 && (
-              <p className="text-sm text-gray-500 mt-2">No skills added yet</p>
+              <p className="text-sm text-gray-600 mt-2">No skills added yet</p>
             )}
           </div>
 
@@ -460,7 +478,7 @@ export default function ProfilePage() {
               </button>
             </div>
             {experiences.length === 0 ? (
-              <p className="text-sm text-gray-500">No experience added yet</p>
+              <p className="text-sm text-gray-600">No experience added yet</p>
             ) : (
               <div className="space-y-3">
                 {experiences.map((exp) => (
@@ -515,7 +533,7 @@ export default function ProfilePage() {
               </button>
             </div>
             {educations.length === 0 ? (
-              <p className="text-sm text-gray-500">No education added yet</p>
+              <p className="text-sm text-gray-600">No education added yet</p>
             ) : (
               <div className="space-y-3">
                 {educations.map((edu) => (
@@ -579,7 +597,7 @@ export default function ProfilePage() {
       {showExperienceModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl text-gray-700 font-bold mb-4">
               {editingExperience ? "Edit Experience" : "Add Experience"}
             </h2>
             <div className="space-y-4">
@@ -593,7 +611,7 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setExpForm({ ...expForm, company: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Company name"
                 />
               </div>
@@ -607,7 +625,7 @@ export default function ProfilePage() {
                     setExpForm({ ...expForm, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Job description and responsibilities"
                 />
               </div>
@@ -622,7 +640,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       setExpForm({ ...expForm, startDate: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -635,7 +653,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       setExpForm({ ...expForm, endDate: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -644,14 +662,12 @@ export default function ProfilePage() {
                   Location *
                 </label>
                 <input
-                  type="text"
-                  value={expForm.location}
-                  onChange={(e) =>
-                    setExpForm({ ...expForm, location: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="City, State or Remote"
-                />
+                ref={locationRef}
+                type="text"
+                defaultValue={expForm.location}
+                className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="City, State or Country"
+              />
               </div>
             </div>
             <div className="flex justify-end gap-4 mt-6">

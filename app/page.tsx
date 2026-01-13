@@ -20,13 +20,13 @@ export default function Home() {
 
           <div className="flex gap-4 justify-center mb-20">
             <Link
-              href="/api/auth/login"
+              href="/dashboard"
               className="px-8 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-lg font-semibold"
             >
-              Start Applying
+              Dashboard
             </Link>
             <Link
-              href="/dashboard"
+              href="/dashboard/applications"
               className="px-8 py-4 bg-white text-indigo-600 rounded-lg hover:bg-gray-50 transition-colors text-lg font-semibold border-2 border-indigo-600"
             >
               View Jobs
@@ -54,7 +54,7 @@ export default function Home() {
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-semibold mb-2">Universal Profile</h3>
               <p className="text-gray-600">
-                One profile that works everywhere. We adapt it to each company's
+                One profile that works everywhere. We adapt it to each company&apos;s
                 requirements.
               </p>
             </div>
